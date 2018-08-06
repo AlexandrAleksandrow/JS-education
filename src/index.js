@@ -11,6 +11,14 @@
    createDivWithText('loftschool') // создаст элемент div, поместит в него 'loftschool' и вернет созданный элемент
  */
 function createDivWithText(text) {
+
+    const div = document.createElement('div');
+
+    div.textContent = text;
+
+    document.body.appendChild(div);
+
+    return div;
 }
 
 /*
@@ -22,6 +30,13 @@ function createDivWithText(text) {
    prepend(document.querySelector('#one'), document.querySelector('#two')) // добавит элемент переданный первым аргументом в начало элемента переданного вторым аргументом
  */
 function prepend(what, where) {
+
+    var el1 = what;
+
+    var el2 = where;
+
+    el2.prepend(el1);
+
 }
 
 /*
@@ -44,12 +59,26 @@ function prepend(what, where) {
    findAllPSiblings(document.body) // функция должна вернуть массив с элементами div и span т.к. следующим соседом этих элементов является элемент с тегом P
  */
 function findAllPSiblings(where) {
+
+    let newArr = [];
+    let elem = where.children;
+
+    for (let i=0; i<elem.length-1; i++) {
+        if (elem[i].nextElementSibling.nodeName === 'P') {
+            newArr.push(elem[i]);
+        }
+    }
+
+    return newArr;
+
 }
 
 /*
  Задание 4:
 
- Функция представленная ниже, перебирает все дочерние узлы типа "элемент" внутри узла переданного в параметре where и возвращает массив из текстового содержимого найденных элементов
+ Функция представленная ниже, перебирает все дочерние узлы типа "элемент" внутри 
+ узла переданного в параметре where и возвращает массив из текстового содержимого найденных элементов
+ 
  Но похоже, что в код функции закралась ошибка и она работает не так, как описано.
 
  Необходимо найти и исправить ошибку в коде так, чтобы функция работала так, как описано выше.
@@ -67,7 +96,9 @@ function findError(where) {
     var result = [];
 
     for (var child of where.childNodes) {
-        result.push(child.innerText);
+        if (child.nodeType === 1) {
+            result.push(child.innerText);
+        }
     }
 
     return result;
