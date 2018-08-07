@@ -117,21 +117,34 @@ function findError(where) {
    должно быть преобразовано в <div></div><p></p>
  */
 function deleteTextNodes(where) {
+
+    for (var elem of where.childNodes) {
+        if (elem.nodeType === 3) {
+            elem.parentNode.removeChild(elem);
+        }
+    }
 }
 
 /*
  Задание 6:
 
- Выполнить предудыщее задание с использование рекурсии - то есть необходимо заходить внутрь каждого дочернего элемента (углубляться в дерево)
-
- Задачу необходимо решить без использования рекурсии, то есть можно не уходить вглубь дерева.
- Так же будьте внимательны при удалении узлов, т.к. можно получить неожиданное поведение при переборе узлов
+Выполнить предудыщее задание с использованием рекурсии -
+то есть необходимо заходить внутрь каждого дочернего элемента (углубляться в дерево)
 
  Пример:
    После выполнения функции, дерево <span> <div> <b>привет</b> </div> <p>loftchool</p> !!!</span>
    должно быть преобразовано в <span><div><b></b></div><p></p></span>
  */
 function deleteTextNodesRecursive(where) {
+  
+    for (let i=0; i<where.childNodes.length; i++) {
+        if (where.childNodes[i].nodeType === 3) {
+            where.removeChild(where.childNodes[i]);
+            i--;
+        } else if (where.childNodes[i].nodeType === 1) {
+            deleteTextNodesRecursive(where.childNodes[i]);
+        }
+    }
 }
 
 /*
