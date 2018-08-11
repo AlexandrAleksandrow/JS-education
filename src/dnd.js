@@ -27,6 +27,16 @@ const homeworkContainer = document.querySelector('#homework-container');
    homeworkContainer.appendChild(newDiv);
  */
 function createDiv() {
+    const newDiv = homeworkContainer.createElement('div'); // new div
+
+    newDiv.classList.add('draggable-div'); // create class CSS
+
+    // Генератор случайных чисел
+    fucntion myRandom(from, to) {
+        return Math.floor((Math.random()*(to-from+1)+from));
+    };
+
+    return newDiv;
 }
 
 /*
