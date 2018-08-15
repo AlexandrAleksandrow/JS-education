@@ -53,7 +53,37 @@ function createDiv() {
    addListeners(newDiv);
  */
 function addListeners(target) {
-  
+    target.addEventListener('dragstart', e => {
+        let activeDiv;
+
+        if (e.target.classList.contains('dragged')) {
+            activeDiv = e.target;
+        }
+
+        activeDiv.setAttribute('dragged', '');
+        activeDiv.style.zIndex = '100';
+
+        let coordX = e.clientX - activeDiv.getBoundingClientRect().left;
+        
+        let coordY = e.clientY - activeDiv.getBoundingClientRect().top;
+
+        e.dataTransfer.setData('coordX', `${coordX}`);
+        e.dataTransfer.setData('coordY', `${coordY}`);
+    })
+
+    target.addEventListener('dragover', e => {
+        e.preventDefault();
+    })
+
+    target.addEventListener('drop', e => {
+        let newActiveDiv = document.querySelector('[dragged]');
+
+        newActiveDiv.style.top = `${e.clientY - e.dataTransfer.getData('coordY')}px`;
+
+        newActiveDiv.style.left = `${e.clientX - e.dataTransfer.getData('coordX')}px`;
+
+        newActiveDiv.removeAttribute('dragged');
+    })
 }
 
 let addDivButton = homeworkContainer.querySelector('#addDiv');
