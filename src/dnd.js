@@ -17,6 +17,9 @@
  */
 const homeworkContainer = document.querySelector('#homework-container');
 
+homeworkContainer.style.width = '100vw';
+homeworkContainer.style.height = '100vh';
+
 /*
  Функция должна создавать и возвращать новый div с классом draggable-div и случайными размерами/цветом/позицией
  Функция должна только создавать элемент и задвать ему случайные размер/позицию/цвет
@@ -32,8 +35,8 @@ function createDiv() {
     newDiv.classList.add('draggable-div');
     newDiv.setAttribute('draggable', 'true');
 
-    newDiv.style.width = `${Math.random()*300}px`;
-    newDiv.style.height = `${Math.random()*300}px`;
+    newDiv.style.width = `${Math.random()*650}px`;
+    newDiv.style.height = `${Math.random()*650}px`;
 
     newDiv.style.background = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
 
@@ -56,8 +59,10 @@ function addListeners(target) {
     target.addEventListener('dragstart', e => {
         let activeDiv;
 
-        if (e.target.classList.contains('dragged')) {
+        if (e.target.classList.contains('draggable-div')) {
             activeDiv = e.target;
+        } else {
+            return;
         }
 
         activeDiv.setAttribute('dragged', '');
@@ -95,7 +100,7 @@ addDivButton.addEventListener('click', function() {
     // добавить на страницу
     homeworkContainer.appendChild(div);
     // назначить обработчики событий мыши для реализации D&D
-    addListeners(div);
+    addListeners(homeworkContainer);
     // можно не назначать обработчики событий каждому div в отдельности, а использовать делегирование
     // или использовать HTML5 D&D - https://www.html5rocks.com/ru/tutorials/dnd/basics/
 });
