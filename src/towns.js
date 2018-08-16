@@ -1,3 +1,6 @@
+import { resolve } from "path";
+import { rejects } from "assert";
+
 /*
  Страница должна предварительно загрузить список городов из
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
@@ -12,7 +15,8 @@
 
  Разметку смотрите в файле towns-content.hbs
 
- Запрещено использовать сторонние библиотеки. Разрешено пользоваться только тем, что встроено в браузер
+ Запрещено использовать сторонние библиотеки. 
+ Разрешено пользоваться только тем, что встроено в браузер
 
  *** Часть со звездочкой ***
  Если загрузка городов не удалась (например, отключился интернет или сервер вернул ошибку),
@@ -37,6 +41,45 @@ const homeworkContainer = document.querySelector('#homework-container');
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
 function loadTowns() {
+    return new Promise ((resolve, reject) => {
+        let xhr = new XMLHttpRequest();
+
+        let citiesArray = [];
+
+        xhr.addEventListener('loaded', function() {
+          loadingBlock.style.display = 'none';
+          filterBlock.style.display = 'block';
+        });
+
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState === 4) {
+              if (xhr.status === 200) {
+                  filterInput.style.display = 'block';
+                  let citiesArray = JSON.parse(xhr.responseText);
+
+                  citiesArray.sort((a, b) => {
+                      if (a.name > b.name) {
+                          return 1;
+                      }
+
+                      return -1;
+                  });
+
+                  resolve(citiesArray);
+              } else {
+                  filterInput.style.display = 'none';
+                  errorMessage.style.display = 'block';
+                  errorButton.style.display = 'block';
+                  errorButton.addEventListener('click', e => {
+                      e.preventDefault();
+                      loadTowns();
+                  });
+              }
+          }
+      };
+
+    xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json', true);
+    xhr.send();
 }
 
 /*
@@ -51,6 +94,13 @@ function loadTowns() {
    isMatching('Moscow', 'Moscov') // false
  */
 function isMatching(full, chunk) {
+    full = full.toLowerCase();
+      chunk = chunk.toLowerCase();
+      if (~full.indexOf(chunk)) {
+          return true;
+      }
+
+      return false;
 }
 
 /* Блок с надписью "Загрузка" */
