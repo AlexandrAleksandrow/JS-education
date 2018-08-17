@@ -41,45 +41,30 @@ const homeworkContainer = document.querySelector('#homework-container');
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
 function loadTowns() {
-    return new Promise ((resolve, reject) => {
-        let xhr = new XMLHttpRequest();
+    return fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
+        .then(response => {
+            return response.json();
+        })
+        .then(json => {
+            const sortCities = json.sort((a, b) => {
+                if (a.name > b.name) {
+                    return 1;
+                }
+                if (a.name < b.name) {
+                    return -1;
+                }
 
-        let citiesArray = [];
+                return 0;
+            });
 
-        xhr.addEventListener('loaded', function() {
-          loadingBlock.style.display = 'none';
-          filterBlock.style.display = 'block';
-        });
+            loadingBlock.innerHTML = '';
+            filterBlock.style.display = 'inline-block';
 
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState === 4) {
-              if (xhr.status === 200) {
-                  filterInput.style.display = 'block';
-                  let citiesArray = JSON.parse(xhr.responseText);
-
-                  citiesArray.sort((a, b) => {
-                      if (a.name > b.name) {
-                          return 1;
-                      }
-
-                      return -1;
-                  });
-
-                  resolve(citiesArray);
-              } else {
-                  filterInput.style.display = 'none';
-                  errorMessage.style.display = 'block';
-                  errorButton.style.display = 'block';
-                  errorButton.addEventListener('click', e => {
-                      e.preventDefault();
-                      loadTowns();
-                  });
-              }
-          }
-      };
-
-    xhr.open('GET', 'https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json', true);
-    xhr.send();
+            return sortCities;
+        })
+        .catch(() => {
+            loadingBlock.innerText = 'Ошибка загрузки';
+        })
 }
 
 /*
@@ -94,13 +79,10 @@ function loadTowns() {
    isMatching('Moscow', 'Moscov') // false
  */
 function isMatching(full, chunk) {
-    full = full.toLowerCase();
-      chunk = chunk.toLowerCase();
-      if (~full.indexOf(chunk)) {
-          return true;
-      }
+    let fullLower = full.toLowerCase();
+    let chunkLower = chunk.toLowerCase();
 
-      return false;
+    return fullLower.includes(chunkLower);
 }
 
 /* Блок с надписью "Загрузка" */
@@ -112,8 +94,27 @@ const filterInput = homeworkContainer.querySelector('#filter-input');
 /* Блок с результатами поиска */
 const filterResult = homeworkContainer.querySelector('#filter-result');
 
+const list = loadTowns();
+
 filterInput.addEventListener('keyup', function() {
     // это обработчик нажатия кливиш в текстовом поле
+    let val = filterInput.value;
+    let fragment = document.createDocumentFragment();
+
+    filterResult.innerHTML = '';
+
+    list.then(cities => {
+        cities.filter(item => isMatching(item.name, val)).forEach((item) => {
+
+            let div = document.createElement('div');
+
+            div.innerText = item.name;
+
+            fragment.appendChild(div);
+        });
+
+        filterResult.appendChild(fragment);
+    })
 });
 
 export {
