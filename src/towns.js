@@ -40,32 +40,7 @@ const homeworkContainer = document.querySelector('#homework-container');
  Массив городов пожно получить отправив асинхронный запрос по адресу
  https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json
  */
-function loadTowns() {
-    return fetch('https://raw.githubusercontent.com/smelukov/citiesTest/master/cities.json')
-        .then(response => {
-            return response.json();
-        })
-        .then(json => {
-            const sortCities = json.sort((a, b) => {
-                if (a.name > b.name) {
-                    return 1;
-                }
-                if (a.name < b.name) {
-                    return -1;
-                }
-
-                return 0;
-            });
-
-            loadingBlock.innerHTML = '';
-            filterBlock.style.display = 'inline-block';
-
-            return sortCities;
-        })
-        .catch(() => {
-            loadingBlock.innerText = 'Ошибка загрузки';
-        })
-}
+import { loadAndSortTowns as loadTowns } from './index';
 
 /*
  Функция должна проверять встречается ли подстрока chunk в строке full
@@ -101,6 +76,9 @@ filterInput.addEventListener('keyup', function() {
     let val = filterInput.value;
     let fragment = document.createDocumentFragment();
 
+    if (val.value === '') {
+        filterResult.innerHTML = '';
+    }
     filterResult.innerHTML = '';
 
     list.then(cities => {
