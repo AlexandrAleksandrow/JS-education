@@ -16,7 +16,7 @@
  7.3: На странице должно быть текстовое поле для фильтрации cookie
  В таблице должны быть только те cookie, в имени или значении которых, хотя бы частично, есть введенное значение
  Если в поле фильтра пусто, то должны выводиться все доступные cookie
- Если дабавляемая cookie не соответсвуте фильтру, то она должна быть добавлена только в браузер, но не в таблицу
+ Если добавляемая cookie не соответсвуте фильтру, то она должна быть добавлена только в браузер, но не в таблицу
  Если добавляется cookie, с именем уже существующией cookie и ее новое значение не соответствует фильтру,
  то ее значение должно быть обновлено в браузере, а из таблицы cookie должна быть удалена
 
@@ -43,10 +43,74 @@ const addButton = homeworkContainer.querySelector('#add-button');
 // таблица со списком cookie
 const listTable = homeworkContainer.querySelector('#list-table tbody');
 
+function doTableCookie(name, value) {
+
+    let row = document.createElement('TR');
+
+    let tdString = document.createElement('TD');
+
+    let tdValue = document.createElement('TD');
+    let btn = document.createElement('TD');
+
+    tdString.innerText = name;
+    tdValue.innerText = value;
+    btn.innerHTML = '<button>Удалить cookie</button>';
+    btn.firstChild.setAttribute('name', name);
+
+    row.appendChild(tdString);
+    row.appendChild(tdValue);
+    row.appendChild(btn);
+
+    btn.addEventListener('click', function del(e) {
+        deleteCookie(e.target.name);
+        updateCookie(addCookie());
+    });
+
+    return row;
+}
+
+function createCookie(name, value) {
+    document.cookie = `${name} = ${value}`;
+}
+
+function isMatching(full, chunk) {
+    if (chunk === '') {
+        return true;
+    }
+
+    return full.toLowerCase().trim().includes(chunk.toLowerCase().trim());
+}
+
+function addCookie() {
+    return document.cookie.split('; ').filter(Boolean).map(cookie => cookie.match(/^([^=]+)=(.+)/)).reduce((obj, [, name, value]) => {
+        obj[name] = value;
+
+        return obj;
+    }, {});
+}
+
+function updateCookie(cookies) {
+    listTable.innerHTML = '';
+
+    for (var prop in cookies) {
+        if (isMatching(cookies[prop], filterNameInput.value) || isMatching(prop, filterNameInput.value)) {
+            listTable.appendChild(doTableCookie(prop, cookies[prop]));
+        }
+    }
+}
+
+function deleteCookie(name) {
+    return document.cookie = `${name} =;expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+}
+
 filterNameInput.addEventListener('keyup', function() {
     // здесь можно обработать нажатия на клавиши внутри текстового поля для фильтрации cookie
+    updateCookie(addCookie());
 });
 
 addButton.addEventListener('click', () => {
     // здесь можно обработать нажатие на кнопку "добавить cookie"
+    createCookie(addNameInput.value, addValueInput.value);
+    updateCookie(addCookie());
 });
+
