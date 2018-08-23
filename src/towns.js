@@ -54,10 +54,10 @@ import { loadAndSortTowns as loadTowns } from './index';
    isMatching('Moscow', 'Moscov') // false
  */
 function isMatching(full, chunk) {
-    let fullLower = full.toLowerCase();
-    let chunkLower = chunk.toLowerCase();
-
-    return fullLower.includes(chunkLower);
+    if (chunk === '') {
+        return false;
+    }
+    return full.toLowerCase().includes(chunk.toLowerCase());
 }
 
 /* Блок с надписью "Загрузка" */
